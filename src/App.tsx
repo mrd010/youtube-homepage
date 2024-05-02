@@ -1,8 +1,10 @@
+import { PageHeader } from './layouts/PageHeader';
+
 function App() {
   return (
-    <>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-    </>
+    <div className="max-h-screen flex flex-col">
+      <PageHeader></PageHeader>
+    </div>
   );
 }
 
