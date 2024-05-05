@@ -25,11 +25,16 @@ import { Children, ElementType, ReactNode, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { Button, buttonStyles } from '../components/Button';
 import { playlists, subscriptions } from '../data/sidebar';
+import { useSidebarContext } from '../contexts/SidebarContext';
+import { PageHeaderFirstSection } from './PageHeader';
 
 export const Sidebar = () => {
+  const { isLargeOpen, isSmallOpen, close } = useSidebarContext();
   return (
     <>
-      <aside className="sticky top-0 overflow-y-auto scrollbar-hidden pb-4 flex flex-col ml-1 lg:hidden">
+      <aside
+        className={`sticky top-0 overflow-y-auto scrollbar-hidden pb-4 flex flex-col ml-1 ${isLargeOpen ? 'lg:hidden ' : 'lg:flex'}`}
+      >
         <SmallSidebarItem Icon={Home} title="Home" url="/"></SmallSidebarItem>
         <SmallSidebarItem Icon={Repeat} title="Shorts" url="/shorts"></SmallSidebarItem>
         <SmallSidebarItem
@@ -39,7 +44,18 @@ export const Sidebar = () => {
         ></SmallSidebarItem>
         <SmallSidebarItem Icon={Library} title="Library" url="/library"></SmallSidebarItem>
       </aside>
-      <aside className="w-56 lg:sticky absolute top-0 overflow-y-auto scrollbar-hidden pb-4 flex-col gap-2 px-2 flex">
+      {isSmallOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-[50] bg-secondary-dark opacity-50"
+          onClick={close}
+        ></div>
+      )}
+      <aside
+        className={`w-56 lg:sticky absolute top-0 overflow-y-auto scrollbar-hidden pb-4 flex-col gap-2 px-2 ${isLargeOpen ? 'lg:flex' : 'lg:hidden'} ${isSmallOpen ? 'bg-white max-h-screen flex z-50' : 'hidden'}`}
+      >
+        <div className="lg:hidden pt-2 pb-4 px-2">
+          <PageHeaderFirstSection></PageHeaderFirstSection>
+        </div>
         <LargeSidebarSection>
           <LargeSidebarItem isActive IconOrImgUrl={Home} title="Home" url="/" />
           <LargeSidebarItem
@@ -149,14 +165,14 @@ export const LargeSidebarSection = ({
 };
 
 type LargeSidebarItemProps = {
-  IconOrImageUrl: ElementType;
+  IconOrImgUrl: ElementType | string;
   title: string;
   url: string;
   isActive?: boolean;
 };
 
 export const LargeSidebarItem = ({
-  IconOrImageUrl,
+  IconOrImgUrl,
   title,
   url,
   isActive = false,
@@ -169,7 +185,11 @@ export const LargeSidebarItem = ({
         `w-full flex items-center rounded-lg gap-4 p-3 ${isActive ? 'font-bold bg-neutral-100 hover:bg-secondary' : ''}`
       )}
     >
-      <IconOrImageUrl className="size-6"></IconOrImageUrl>
+      {typeof IconOrImgUrl === 'string' ? (
+        <img src={IconOrImgUrl} className="size-6"></img>
+      ) : (
+        <IconOrImgUrl className="size-6"></IconOrImgUrl>
+      )}
       <div className="whitespace-nowrap overflow-hidden text-ellipsis">{title}</div>
     </a>
   );
